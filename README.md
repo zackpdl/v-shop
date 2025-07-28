@@ -52,6 +52,7 @@ git clone <your-repo-url>
 cd v-shop
 npm install
 npm run dev
+```
 
 # 👥 Team Members
 ### Puran Paodensakul
