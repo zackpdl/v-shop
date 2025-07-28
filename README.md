@@ -1,4 +1,4 @@
-# 💰 Finance Tracker
+# 💰 Spending Tracker
 
 A responsive web app for tracking personal expenses with visual analytics and a simple journaling interface.
 
