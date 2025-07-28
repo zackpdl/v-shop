@@ -44,10 +44,11 @@ type Category = { id: number; name: string; icon: string };
 🚀 Deployment
 Vercel (recommended): vercel
 
-Netlify: Upload dist after npm run build
+
 
 GitHub Pages: Use gh-pages with dist
 
-📄 License
-MIT License — See LICENSE
+# Team members
+### Puran Paodensakul
+### Gulizara Benjapalaporn
 
