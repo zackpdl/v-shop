@@ -10,9 +10,9 @@ A responsive web app for tracking personal expenses with visual analytics and a 
 
 ## 📸 Screenshots
 
-| Analytics Dashboard | Journal View | Add Category | Responsive UI |
-|---------------------|--------------|---------------|----------------|
-| ![screenshot1](img/brave_screenshot_zackpdl.github.io%20(1).png) | ![screenshot2](img/brave_screenshot_zackpdl.github.io%20(2).png) | ![screenshot3](img/brave_screenshot_zackpdl.github.io%20(3).png) | ![screenshot4](img/brave_screenshot_zackpdl.github.io.png) |
+| Analytics Dashboard | Journal View 1 | Journal View 2 | Add Category |
+|---------------------|----------------|----------------|--------------|
+| ![Dashboard](img/dashboard.png) | ![Journal View 1](img/journal_view1.png) | ![Journal View 2](img/journal_view2.png) | ![Add Category](img/add_cat.png) |
 
 ---
 
