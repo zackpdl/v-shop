@@ -48,7 +48,7 @@ A responsive web app for tracking personal expenses with visual analytics and a 
 ## 📦 Setup
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/zackpdl/v-shop
 cd v-shop
 npm install
 npm run dev
