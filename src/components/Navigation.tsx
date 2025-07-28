@@ -24,7 +24,7 @@ const Navigation: React.FC = () => {
           fontSize: '24px',
           fontWeight: 'bold'
         }}>
-          💰 Finance Tracker
+          💰 Spending Tracker
         </h1>
         
         <div style={{ display: 'flex', gap: 20 }}>

@@ -1,54 +1,58 @@
-💰 Finance Tracker
-Contribution 
-Puran Paodensakul 
-Gulizara Benjapalaporn
+# 💰 Finance Tracker
 
 A responsive web app for tracking personal expenses with visual analytics and a simple journaling interface.
 
-🚀 Features
-Analytics Dashboard: Line & pie charts, daily/weekly/monthly views, total & monthly spend
+## 🙌 Contribution  
+**Puran Paodensakul**  
+**Gulizara Benjapalaporn**
 
-Journal: Log expenses by date, category, and amount (THB)
+---
 
-Custom Categories: Add your own with icons
+## 📸 Screenshots
 
-Local Storage: Data saved across sessions
+| Analytics Dashboard | Journal View | Add Category | Responsive UI |
+|---------------------|--------------|---------------|----------------|
+| ![screenshot1](img/brave_screenshot_zackpdl.github.io%20(1).png) | ![screenshot2](img/brave_screenshot_zackpdl.github.io%20(2).png) | ![screenshot3](img/brave_screenshot_zackpdl.github.io%20(3).png) | ![screenshot4](img/brave_screenshot_zackpdl.github.io.png) |
 
-Responsive Design: Mobile and desktop friendly
+---
 
-🛠 Tech Stack
-React 18 + TypeScript
+## 🚀 Features
 
-React Router, Recharts
+- 📊 **Analytics Dashboard**  
+  Line & pie charts with daily, weekly, and monthly spending views.
 
-React-use (localStorage)
+- 📘 **Journal**  
+  Log expenses by date, category, and amount (THB).
 
-Vite (build tool)
+- 🏷️ **Custom Categories**  
+  Add your own categories with descriptions and icons.
 
-📦 Setup
-bash
-Copy
-Edit
+- 💾 **Local Storage**  
+  All data is stored persistently in the browser.
+
+- 📱 **Responsive Design**  
+  Optimized for both desktop and mobile use.
+
+---
+
+## 🛠 Tech Stack
+
+- React 18 + TypeScript  
+- React Router  
+- Recharts  
+- React-use (localStorage)  
+- Vite (build tool)
+
+---
+
+## 📦 Setup
+
+```bash
 git clone <your-repo-url>
 cd v-shop
 npm install
 npm run dev
-Visit: http://localhost:5173
 
-📊 Data Models
-ts
-Copy
-Edit
-type Entry = { id: number; name: string; icon: string; amount: number; date: string };
-type Category = { id: number; name: string; icon: string };
-🚀 Deployment
-Vercel (recommended): vercel
-
-
-
-GitHub Pages: Use gh-pages with dist
-
-# Team members
+# 👥 Team Members
 ### Puran Paodensakul
 ### Gulizara Benjapalaporn
-
