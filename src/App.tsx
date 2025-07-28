@@ -10,10 +10,12 @@ function App() {
     <Router>
       <div className="App">
         <Navigation />
-        <Routes>
-          <Route path="/" element={<AnalyticsDashboard />} />
-          <Route path="/journal" element={<Journal />} />
-        </Routes>
+        <div className="content-container">
+          <Routes>
+            <Route path="/" element={<AnalyticsDashboard />} />
+            <Route path="/journal" element={<Journal />} />
+          </Routes>
+        </div>
       </div>
     </Router>
   );

@@ -1,49 +1,85 @@
 import React, { useRef, useState } from 'react';
 import { useLocalStorage } from 'react-use';
 // @ts-ignore
-import categoryData from '../accessory.json';
+import categoryData from '../spending-category.json';
 
 type Entry = {
   id: number;
-  name: string;
-  icon: string;
+  category: string;
+  description: string;
   amount: number;
   date: string;
 };
 
 type Category = {
-  id: number;
-  name: string;
-  icon: string;
+  spending_id: number;
+  category: string;
+  description: string;
 };
 
 const Journal: React.FC = () => {
   const amountRef = useRef<HTMLInputElement>(null);
   const dateRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLSelectElement>(null);
+  const newCategoryRef = useRef<HTMLInputElement>(null);
+  const newDescriptionRef = useRef<HTMLInputElement>(null);
 
   const [entries, setEntries] = useLocalStorage<Entry[]>('financeEntries', []);
-  const [customCategories] = useLocalStorage<Category[]>('categories', []);
-  const [selectedCategory, setSelectedCategory] = useState(categoryData[0]);
+  const [customCategories, setCustomCategories] = useLocalStorage<Category[]>('categories', []);
+  const [selectedCategory, setSelectedCategory] = useState<Category>(categoryData[0]);
+  const [description, setDescription] = useState('');
+  const [showNewCategoryForm, setShowNewCategoryForm] = useState(false);
 
   // Combine default categories with custom categories
   const allCategories = [...categoryData, ...(customCategories || [])];
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = parseInt(e.target.value);
-    const cat = allCategories.find((c: any) => c.id === selectedId);
-    if (cat) setSelectedCategory(cat);
+    if (selectedId === -1) {
+      setShowNewCategoryForm(true);
+      return;
+    }
+    const cat = allCategories.find((c: any) => c.spending_id === selectedId);
+    if (cat) {
+      setSelectedCategory(cat);
+      setDescription(cat.description);
+    }
+  };
+
+  const handleAddCategory = () => {
+    const categoryName = newCategoryRef.current?.value;
+    const categoryDescription = newDescriptionRef.current?.value;
+    
+    if (!categoryName || !categoryDescription) {
+      alert('Please fill in both category name and description');
+      return;
+    }
+
+    const newCategory: Category = {
+      spending_id: Date.now(),
+      category: categoryName,
+      description: categoryDescription
+    };
+
+    setCustomCategories([...(customCategories || []), newCategory]);
+    setSelectedCategory(newCategory);
+    setDescription(categoryDescription);
+    setShowNewCategoryForm(false);
+
+    // Clear form
+    if (newCategoryRef.current) newCategoryRef.current.value = '';
+    if (newDescriptionRef.current) newDescriptionRef.current.value = '';
   };
 
   const handleSubmit = () => {
     const amount = Number(amountRef.current?.value);
     const date = dateRef.current?.value;
-    if (!amount || !date || !selectedCategory) return alert('Fill all fields');
+    if (!amount || !date || !selectedCategory || !description) return alert('Fill all fields');
 
     const entry: Entry = {
       id: Date.now(),
-      name: selectedCategory.name,
-      icon: selectedCategory.icon,
+      category: selectedCategory.category,
+      description: description,
       amount,
       date,
     };
@@ -62,17 +98,11 @@ const Journal: React.FC = () => {
   const total = (entries || []).reduce((sum, entry) => sum + entry.amount, 0);
 
   return (
-    <div style={{ padding: 20, maxWidth: 800, margin: '0 auto' }}>
+    <div>
       <h1>🧾 Spending Journal</h1>
 
       {/* Input Form */}
-      <div style={{ 
-        background: 'white', 
-        padding: 20, 
-        borderRadius: 10, 
-        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-        marginBottom: 30 
-      }}>
+      <div className="card">
         <h3>📝 Add New Entry</h3>
         
         <div style={{ display: 'grid', gap: 15 }}>
@@ -83,13 +113,6 @@ const Journal: React.FC = () => {
             <input 
               type="date" 
               ref={dateRef}
-              style={{ 
-                width: '100%', 
-                padding: 10, 
-                borderRadius: 5, 
-                border: '1px solid #ccc',
-                fontSize: 16
-              }}
             />
           </div>
           
@@ -100,22 +123,51 @@ const Journal: React.FC = () => {
             <select 
               ref={categoryRef} 
               onChange={handleCategoryChange}
-              style={{ 
-                width: '100%', 
-                padding: 10, 
-                borderRadius: 5, 
-                border: '1px solid #ccc',
-                fontSize: 16
-              }}
+              value={selectedCategory?.spending_id || ''}
             >
+              <option value="-1">+ Add New Category</option>
               {allCategories.map((cat: any) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.icon} {cat.name}
+                <option key={cat.spending_id} value={cat.spending_id}>
+                  {cat.category}
                 </option>
               ))}
             </select>
+
+            {showNewCategoryForm && (
+              <div className="new-category-form card mb-4">
+                <h3>Create New Category</h3>
+                <input
+                  ref={newCategoryRef}
+                  type="text"
+                  placeholder="Category Name"
+                  className="mb-2"
+                />
+                <input
+                  ref={newDescriptionRef}
+                  type="text"
+                  placeholder="Category Description"
+                  className="mb-2"
+                />
+                <div className="flex gap-2">
+                  <button onClick={handleAddCategory} className="primary">Add Category</button>
+                  <button onClick={() => setShowNewCategoryForm(false)} className="secondary">Cancel</button>
+                </div>
+              </div>
+            )}
           </div>
           
+          <div>
+            <label style={{ display: 'block', marginBottom: 5, fontWeight: 'bold' }}>
+              📝 Description:
+            </label>
+            <input 
+              type="text" 
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter description"
+            />
+          </div>
+
           <div>
             <label style={{ display: 'block', marginBottom: 5, fontWeight: 'bold' }}>
               💸 Amount (THB):
@@ -124,39 +176,18 @@ const Journal: React.FC = () => {
               type="number" 
               ref={amountRef}
               placeholder="Enter amount"
-              style={{ 
-                width: '100%', 
-                padding: 10, 
-                borderRadius: 5, 
-                border: '1px solid #ccc',
-                fontSize: 16
-              }}
             />
           </div>
           
-          <button 
-            onClick={handleSubmit}
-            style={{ 
-              padding: '12px 24px', 
-              backgroundColor: '#28a745', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: 5, 
-              cursor: 'pointer',
-              fontSize: 16,
-              fontWeight: 'bold'
-            }}
-          >
+          <button onClick={handleSubmit}>
             ➕ Add Entry
           </button>
         </div>
       </div>
 
       {/* Summary */}
-      <div style={{ 
+      <div className="card" style={{ 
         background: '#e8f5e8', 
-        padding: 20, 
-        borderRadius: 10, 
         textAlign: 'center',
         marginBottom: 30
       }}>
@@ -165,12 +196,7 @@ const Journal: React.FC = () => {
       </div>
 
       {/* Entries Table */}
-      <div style={{ 
-        background: 'white', 
-        padding: 20, 
-        borderRadius: 10, 
-        boxShadow: '0 2px 10px rgba(0,0,0,0.1)' 
-      }}>
+      <div className="card">
         <h3>📋 Spending Records</h3>
         
         {(entries || []).length === 0 ? (
@@ -202,8 +228,8 @@ const Journal: React.FC = () => {
                       {new Date(entry.date).toLocaleDateString()}
                     </td>
                     <td style={{ padding: 12 }}>
-                      <span style={{ marginRight: 8 }}>{entry.icon}</span>
-                      {entry.name}
+                      {entry.category}
+                      <div style={{ fontSize: 12, color: '#666' }}>{entry.description}</div>
                     </td>
                     <td style={{ padding: 12, textAlign: 'right', fontWeight: 'bold' }}>
                       THB {entry.amount.toLocaleString()}
@@ -212,12 +238,7 @@ const Journal: React.FC = () => {
                       <button 
                         onClick={() => handleDeleteEntry(entry.id)}
                         style={{ 
-                          padding: '4px 8px', 
-                          backgroundColor: '#dc3545', 
-                          color: 'white', 
-                          border: 'none', 
-                          borderRadius: 3, 
-                          cursor: 'pointer',
+                          backgroundColor: '#dc3545',
                           fontSize: 12
                         }}
                       >
@@ -235,4 +256,4 @@ const Journal: React.FC = () => {
   );
 };
 
-export default Journal; 
+export default Journal;

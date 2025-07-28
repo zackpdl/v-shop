@@ -4,28 +4,28 @@ import { useLocalStorage } from 'react-use';
 
 type Entry = {
   id: number;
-  name: string;
-  icon: string;
+  category: string;
+  description: string;
   amount: number;
   date: string;
 };
 
 type Category = {
-  id: number;
-  name: string;
-  icon: string;
+  spending_id: number;
+  category: string;
+  description: string;
 };
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF6B6B', '#4ECDC4', '#45B7D1'];
 
 const AnalyticsDashboard: React.FC = () => {
   const [entries] = useLocalStorage<Entry[]>('financeEntries', []);
-  const [categories] = useLocalStorage<Category[]>('categories', []);
+  const [categories, setCategories] = useLocalStorage<Category[]>('categories', []);
   const [selectedMonth, setSelectedMonth] = useState<string>(new Date().toISOString().slice(0, 7));
   const [viewMode, setViewMode] = useState<'daily' | 'weekly' | 'monthly'>('monthly');
   const [chartTimeframe, setChartTimeframe] = useState<'all' | 'month'>('all');
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newCategoryIcon, setNewCategoryIcon] = useState('📦');
+  const [newCategory, setNewCategory] = useState('');
+  const [newDescription, setNewDescription] = useState('');
 
   // Calculate totals
   const totalAllTime = (entries || []).reduce((sum, entry) => sum + entry.amount, 0);
@@ -83,7 +83,7 @@ const AnalyticsDashboard: React.FC = () => {
     const dataToUse = chartTimeframe === 'all' ? (entries || []) : entriesOfSelectedMonth;
     
     const grouped = dataToUse.reduce((acc, entry) => {
-      acc[entry.name] = (acc[entry.name] || 0) + entry.amount;
+      acc[entry.category] = (acc[entry.category] || 0) + entry.amount;
       return acc;
     }, {} as Record<string, number>);
     
@@ -94,34 +94,34 @@ const AnalyticsDashboard: React.FC = () => {
   };
 
   const handleAddCategory = () => {
-    if (!newCategoryName.trim()) return;
+    if (!newCategory.trim() || !newDescription.trim()) return;
     
-    const newCategory: Category = {
-      id: Date.now(),
-      name: newCategoryName,
-      icon: newCategoryIcon
+    const categoryToAdd: Category = {
+      spending_id: Date.now(),
+      category: newCategory,
+      description: newDescription
     };
     
-    const updatedCategories = [...(categories || []), newCategory];
-    localStorage.setItem('categories', JSON.stringify(updatedCategories));
-    setNewCategoryName('');
-    setNewCategoryIcon('📦');
+    const updatedCategories = [...(categories || []), categoryToAdd];
+     setCategories(updatedCategories);
+     setNewCategory('');
+     setNewDescription('');
   };
 
   const lineChartData = prepareLineChartData();
   const pieChartData = preparePieChartData();
 
   return (
-    <div style={{ padding: 20, maxWidth: 1200, margin: '0 auto' }}>
+    <div>
       <h1>📊 Analytics Dashboard</h1>
       
       {/* Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20, marginBottom: 30 }}>
-        <div style={{ background: '#e8f5e8', padding: 20, borderRadius: 10, textAlign: 'center' }}>
+        <div className="card" style={{ background: '#e8f5e8', textAlign: 'center' }}>
           <h3>🟢 Total Spending (All Time)</h3>
           <h2>THB {totalAllTime.toLocaleString()}</h2>
         </div>
-        <div style={{ background: '#fff3cd', padding: 20, borderRadius: 10, textAlign: 'center' }}>
+        <div className="card" style={{ background: '#fff3cd', textAlign: 'center' }}>
           <h3>🟡 Total Spending (Selected Month)</h3>
           <h2>THB {totalOfSelectedMonth.toLocaleString()}</h2>
         </div>
@@ -168,7 +168,7 @@ const AnalyticsDashboard: React.FC = () => {
       {/* Charts */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 30, marginBottom: 30 }}>
         {/* Line Chart */}
-        <div style={{ background: 'white', padding: 20, borderRadius: 10, boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+        <div className="card">
           <h3>🔵 Spending Over Time</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={lineChartData}>
@@ -183,7 +183,7 @@ const AnalyticsDashboard: React.FC = () => {
         </div>
 
         {/* Pie Chart */}
-        <div style={{ background: 'white', padding: 20, borderRadius: 10, boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+        <div className="card">
           <h3>🟣 Spending by Category</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
@@ -208,37 +208,23 @@ const AnalyticsDashboard: React.FC = () => {
       </div>
 
       {/* Add New Category */}
-      <div style={{ background: 'white', padding: 20, borderRadius: 10, boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+      <div className="card">
         <h3>🆕 Add New Category</h3>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
           <input
             type="text"
             placeholder="Category name"
-            value={newCategoryName}
-            onChange={e => setNewCategoryName(e.target.value)}
+            value={newCategory}
+            onChange={e => setNewCategory(e.target.value)}
             style={{ padding: 8, borderRadius: 5, border: '1px solid #ccc' }}
           />
-          <select
-            value={newCategoryIcon}
-            onChange={e => setNewCategoryIcon(e.target.value)}
+          <input
+            type="text"
+            placeholder="Category description"
+            value={newDescription}
+            onChange={e => setNewDescription(e.target.value)}
             style={{ padding: 8, borderRadius: 5, border: '1px solid #ccc' }}
-          >
-            <option value="📦">📦</option>
-            <option value="🍔">🍔</option>
-            <option value="🚌">🚌</option>
-            <option value="💡">💡</option>
-            <option value="🎮">🎮</option>
-            <option value="🛍️">🛍️</option>
-            <option value="💊">💊</option>
-            <option value="📚">📚</option>
-            <option value="✈️">✈️</option>
-            <option value="🛡️">🛡️</option>
-            <option value="💰">💰</option>
-            <option value="🏠">🏠</option>
-            <option value="🚗">🚗</option>
-            <option value="🎬">🎬</option>
-            <option value="🏋️">🏋️</option>
-          </select>
+          />
           <button 
             onClick={handleAddCategory}
             style={{ 
@@ -258,4 +244,4 @@ const AnalyticsDashboard: React.FC = () => {
   );
 };
 
-export default AnalyticsDashboard; 
+export default AnalyticsDashboard;
