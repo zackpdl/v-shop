@@ -6,7 +6,7 @@ import './App.css';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/spending_tracker">
       <div className="App">
         <Navigation />
         <div className="content-container">
